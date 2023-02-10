@@ -26,7 +26,6 @@ const customStyles = {
 Modal.setAppElement('#root');
 
 export const useCalendarModal = () => {
-  const [isOpen, setIsOpen] = useState(true);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const [formValues, setFormValues] = useState({
@@ -41,7 +40,6 @@ export const useCalendarModal = () => {
     return formValues.title.length > 0 ? 'is-valid' : 'is-invalid';
   }, [formValues.title, formSubmitted]);
 
-  const onOpenCloseModal = () => setIsOpen((prevState) => !prevState);
 
   const onInputChanged = ({ target }) => {
     setFormValues({
@@ -76,14 +74,13 @@ export const useCalendarModal = () => {
   };
 
   return {
-    isOpen,
-    formValues,
-    formSubmitted,
+    customStyles,
     titleClass,
-    onOpenCloseModal,
+    formValues,
+    setFormValues,
+    formSubmitted,
     onInputChanged,
     onDateChanged,
     onSubmit,
-    customStyles,
   };
 };

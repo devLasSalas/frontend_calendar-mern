@@ -2,24 +2,39 @@ import Modal from 'react-modal';
 import DatePicker from 'react-datepicker';
 
 import { useCalendarModal } from '../';
+import { useUiStore } from '../../hooks/useUiStore';
+import { useEffect } from 'react';
+import { useCalendarStore } from '../../hooks';
 
 export const CalendarModal = () => {
+  const { isDateOpenModal, closeDateModal } = useUiStore();
+  const { activeEvent } = useCalendarStore();
+
   const {
     customStyles,
     formValues,
-    isOpen,
-    formSubmitted,
+    setFormValues,
     onSubmit,
     onInputChanged,
     onDateChanged,
-    onOpenCloseModal,
     titleClass,
   } = useCalendarModal();
 
+  useEffect(() => {
+    if( activeEvent !== null ) {
+      setFormValues({ ...activeEvent })
+    } 
+  }, [activeEvent])
+
+  const onCloseModal = () => {
+    // console.log('Cerrando modal...');
+    closeDateModal();
+  };
+
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onOpenCloseModal}
+      isOpen={isDateOpenModal}
+      onRequestClose={onCloseModal}
       style={customStyles}
       className='modal'
       overlayClassName='modal-fondo'

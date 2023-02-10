@@ -8,21 +8,16 @@ import { localizer, getMessagesES } from '../../helpers';
 
 import { CalendarEvent, CalendarModal, Navbar } from '../';
 
-const events = [
-  {
-    title: 'Cumpleaños',
-    notes: 'Hay que comprar el pastel',
-    start: new Date(),
-    end: addHours(new Date(), 2),
-    bgColor: '#fafafa',
-    user: {
-      _id: '123',
-      name: 'Carlos',
-    },
-  },
-];
+import { useCalendarStore, useUiStore } from '../../hooks';
+
+
+
 
 export const CalendarPage = () => {
+
+  const { openDateModal } = useUiStore();
+  const { events, setActiveEvent } = useCalendarStore()
+
   const [lastView, setLastView] = useState(
     localStorage.getItem('lastView') || 'week'
   );
@@ -40,11 +35,13 @@ export const CalendarPage = () => {
   };
 
   const onDoubleClick = (event) => {
-    console.log({ doubleClick: event });
+    // console.log({ doubleClick: event });
+    openDateModal();
   };
 
   const onSelect = (event) => {
-    console.log({ click: event });
+    // console.log({ click: event });
+    setActiveEvent( event );
   };
 
   const onViewChange = (event) => {
@@ -57,20 +54,20 @@ export const CalendarPage = () => {
 
       <Calendar
         culture='es'
-        localizer={localizer}
-        defaultView={lastView}
-        events={events}
+        localizer={ localizer }
+        defaultView={ lastView }
+        events={ events }
         startAccessor='start'
         endAccessor='end'
-        style={{ height: 'calc(100vh  - 80px)' }}
-        messages={getMessagesES()}
-        eventPropGetter={eventStyleGetter}
+        style={ { height: 'calc(100vh  - 80px)' } }
+        messages={ getMessagesES() }
+        eventPropGetter={ eventStyleGetter }
         components={{
           event: CalendarEvent,
         }}
-        onDoubleClickEvent={onDoubleClick}
-        onSelectEvent={onSelect}
-        onView={onViewChange}
+        onDoubleClickEvent={ onDoubleClick }
+        onSelectEvent={ onSelect }
+        onView={ onViewChange }
       />
 
       <CalendarModal />
