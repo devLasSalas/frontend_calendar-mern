@@ -54,24 +54,7 @@ export const useCalendarModal = () => {
     });
   };
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    setFormSubmitted(true);
-
-    const difference = differenceInSeconds(formValues.end, formValues.start);
-    //Validar
-    if (isNaN(difference) || difference <= 1) {
-      Swal.fire('Fechas incorrectas', 'Revisar las fechas ingresadas', 'error');
-      return;
-    }
-    if (formValues.title.length <= 1) return;
-
-    //Si pasa las validaciones
-    // console.log(formValues);
-
-    //Remover errores en la pantalla
-    //Cerrar modal
-  };
+  
 
   return {
     customStyles,
@@ -81,6 +64,5 @@ export const useCalendarModal = () => {
     formSubmitted,
     onInputChanged,
     onDateChanged,
-    onSubmit,
   };
 };

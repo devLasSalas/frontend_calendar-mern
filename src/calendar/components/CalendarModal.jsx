@@ -1,24 +1,47 @@
-import Modal from 'react-modal';
-import DatePicker from 'react-datepicker';
+import { useEffect, useMemo, useState } from 'react';
 
-import { useCalendarModal } from '../';
-import { useUiStore } from '../../hooks/useUiStore';
-import { useEffect } from 'react';
-import { useCalendarStore } from '../../hooks';
+import Modal from 'react-modal';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+import { addHours, differenceInSeconds } from 'date-fns';
+import es from 'date-fns/locale/es';
+
+import { useCalendarStore, useUiStore } from '../../hooks';
+
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css'
+
+
+
+registerLocale('es', es);
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+Modal.setAppElement('#root');
 
 export const CalendarModal = () => {
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
   const { isDateOpenModal, closeDateModal } = useUiStore();
+  const { startSavingEvent } = useCalendarStore();
   const { activeEvent } = useCalendarStore();
 
-  const {
-    customStyles,
-    formValues,
-    setFormValues,
-    onSubmit,
-    onInputChanged,
-    onDateChanged,
-    titleClass,
-  } = useCalendarModal();
+  const [formValues, setFormValues] = useState({
+    title: '',
+    notes: '',
+    start: new Date(),
+    end: addHours(new Date(), 2),
+  });
+
 
   useEffect(() => {
     if( activeEvent !== null ) {
@@ -29,6 +52,45 @@ export const CalendarModal = () => {
   const onCloseModal = () => {
     // console.log('Cerrando modal...');
     closeDateModal();
+  };
+
+  const titleClass = useMemo(() => {
+    if (!formSubmitted) return;
+    return formValues.title.length > 0 ? 'is-valid' : 'is-invalid';
+  }, [formValues.title, formSubmitted]);
+
+
+  const onInputChanged = ({ target }) => {
+    setFormValues({
+      ...formValues,
+      [target.name]: target.value,
+    });
+  };
+  const onDateChanged = (event, changing) => {
+    setFormValues({
+      ...formValues,
+      [changing]: event,
+    });
+  };
+
+  const onSubmit =  async (event) => {
+    event.preventDefault();
+    setFormSubmitted(true);
+
+    const difference = differenceInSeconds(formValues.end, formValues.start);
+    //Validar
+    if (isNaN(difference) || difference <= 1) {
+      Swal.fire('Fechas incorrectas', 'Revisar las fechas ingresadas', 'error');
+      return;
+    }
+    if (formValues.title.length <= 1) return;
+
+    //Si pasa las validaciones
+    // console.log(formValues);
+    await startSavingEvent( formValues )
+    closeDateModal();
+    setFormSubmitted(false)
+    
   };
 
   return (
