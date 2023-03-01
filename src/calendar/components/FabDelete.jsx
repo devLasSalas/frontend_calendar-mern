@@ -5,9 +5,7 @@ export const FabDelete = () => {
   const { startDeleteEvent, hasEventSelected } = useCalendarStore();
 
     const handleDelete = () => {
-      //TODO: Llegar al backend
-
-
+      console.log(hasEventSelected)
       startDeleteEvent();
     };
 
